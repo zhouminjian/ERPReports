@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>规格详情</title>
+		<link rel="stylesheet" href="../../layui/css/layui.css">
+	</head>
+
+	<body>
+		<div class="layui-form-item" style="margin:20px;">
+			<div class="layui-inline">
+				<table class="layui-hide layui-table-cell" id="detailtable" lay-filter="detailresult"></table>
+			</div>
+		</div>
+	</body>
+	<style>
+		body .layer-ext-myskin .layui-layer-content {
+		    overflow: visible;
+		}
+	</style>
+	<script src="../../js/jquery.min.js"></script>
+	<script src="../../layui/layui.js"></script>
+	<script src="../../js/verify.js"></script>
+	<script type="text/javascript">
+		//填充详情页面内容
+		$(function(){
+			$.ajax({
+				type:'post',
+				data:'',
+				url:'../../model/getindexinfo.php',
+				success:function(result){
+					result = JSON.parse(result);
+					if(result.code == 123){
+						layui.use('table', function(){
+							var table = layui.table;
+							table.render({
+							  	elem:'#detailtable',
+								url:"../../controller/ywyggdetail.php",
+								title:'查询结果',
+								cols:[[
+									{field:'Spec',title:'规格',width:300,align:'center',templet:'<div><span title="{{d.Spec}}">{{d.Spec}}</span></div>'},
+									{field:'SpecNum',title:'订单个数',width:100,align:'center',templet:'<div><span title="{{d.SpecNum}}">{{d.SpecNum}}</span></div>'},
+									]],
+							  	even:true,
+							  	page:true,
+							  	limits: [15,30,45,60,100],
+							  	limit: 15,
+							});
+						});
+					}
+					else{
+						layer.msg(result.msg);
+					}
+				}
+			});
+		});
+	</script>
+</html>

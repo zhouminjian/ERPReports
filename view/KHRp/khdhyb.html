@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>客户大货样布报表</title>
+	</head>
+	<body class="layui-layout-body">
+		<div style="padding: 15px;">
+			<div>
+				<form class="layui-form" name="searchywy">
+					<div class="layui-form-item">
+						<div class="layui-inline" id="choosedate3">
+							<div class="layui-inline">
+								<div class="layui-input-inline">
+									<input type="text" name="startyear" class="layui-input" id="startyear" lay-verify="required" readonly="" placeholder="开始年份">
+								</div>
+							</div>
+						</div>
+						<div class="layui-inline">
+							<div class="layui-input-inline" style="width: 400px; display: inline-block; vertical-align: top;">
+								<select name="kh" id='kh' xm-select="select1" xm-select-search xm-select-show-count="4">
+									<!--从系统中读取客户-->
+								</select>
+							</div>
+							<button class="layui-btn" type="button" id="searchbtn" lay-submit lay-filter="searchkh">查询</button>
+							<button class="layui-btn" type="button" id="exportbtn">导出</button>
+						</div>
+					</div>
+				</form>
+				<div class="layui-form-item">
+					<div class="layui-inline">
+						<table class="layui-hide layui-table-cell" id="khdhybresult" lay-filter="result"></table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript">
+		//动态加载所有业务员
+		$(function(){
+			$.ajax({
+				type:'post',
+				url:'model/loadAllkh.php',
+				data:'',
+				success:function(result){
+					result = JSON.parse(result);
+					$("#kh").empty();
+					var str = "<option value=''></option>";
+					for(let j in result.data){
+						str += "<option value='"+result.data[j]['CustomerID']+"'>"+result.data[j]['NameC']+"</option>";
+					}
+					$("#kh").append(str);
+					layui.use('form', function() {
+                        var form = layui.form;
+                        form.render();
+                	});
+                	mulselect();
+				}
+			});
+			$("#exportbtn").hide();
+		});
+		var laydate;
+		var form;
+		layui.use('laydate', function() {
+			laydate = layui.laydate;
+			laydate.render({
+				elem: '#startyear',
+				type: 'year'
+			});
+		});
+		layui.use('form', function() {
+			form = layui.form;
+			form.render();
+			form.on('submit(searchkh)',function(data){
+				data = JSON.stringify(data.field);
+				//记录升降排序，默认第一次降序
+				var Aoption = {
+					'Qtys':"desc",
+					'CRolls':'desc',
+					'PRolls':'desc',
+					'DRolls':'desc',
+					'ARolls':'desc',
+				};
+				$.ajax({
+					type:'post',
+					url:'model/notecondition.php',
+					data:{'data':data},
+					success:function(){
+						layui.use('table', function(){
+							var table = layui.table;
+							table.render({
+							  	elem:'#khdhybresult',
+								url:"controller/khdhyb.php",
+								title:'查询结果',
+								cols:[[
+									{field:'NameC',title:'客户',width:100,align:'center',templet:'<div><span title="{{d.NameC}}">{{d.NameC}}</span></div>'},
+									{field:'OrderNums',title:'样布单个数',width:100,align:'center',templet:'<div><span title="{{d.OrderNums}}">{{d.OrderNums}}</span></div>'},
+									{field:'Qtys',title:'样布订单量',width:110,align:'center',templet:'<div><span title="{{d.Qtys}}">{{d.Qtys}}</span></div>',sort:true},
+									{field:'Cells',title:'经销单个数',width:130,align:'center',templet:'<div><span title="{{d.Cells}}">{{d.Cells}}</span></div>'},	
+									{field:'CRolls',title:'经销订单量',width:130,align:'center',templet:'<div><span title="{{d.CRolls}}">{{d.CRolls}}</span></div>',sort:true},
+									{field:'ProSheets',title:'加工单个数',width:130,align:'center',templet:'<div><span title="{{d.ProSheets}}">{{d.ProSheets}}</span></div>'},
+									{field:'PRolls',title:'加工订单量',width:130,align:'center',templet:'<div><span title="{{d.PRolls}}">{{d.PRolls}}</span></div>',sort:true},
+									{field:'DouDistributes',title:'双经销个数',width:130,align:'center',templet:'<div><span title="{{d.DouDistributes}}">{{d.DouDistributes}}</span></div>'},
+									{field:'DRolls',title:'双经销单量',width:130,align:'center',templet:'<div><span title="{{d.DRolls}}">{{d.DRolls}}</span></div>',sort:true},
+									{field:'AOrder',title:'大货总订单数',width:130,align:'center',templet:'<div><span title="{{d.AOrder}}">{{d.AOrder}}</span></div>'},
+									{field:'ARolls',title:'大货总订单量',width:130,align:'center',templet:'<div><span title="{{d.ARolls}}">{{d.ARolls}}</span></div>',sort:true},
+								]],
+							  	even:true,
+							  	page:true,
+							  	autoSort: false,
+							  	limits: [15,30,45,60,100],
+							  	limit: 15,
+							  	done: function(res, curr, count){
+							  		//判断查询是否有结果
+							  		if(count > 0){
+							  			//显示导出按钮
+							  			$("#exportbtn").show();
+							  		}
+							  		else{
+							  			$("#exportbtn").hide();
+							  		}
+							  	}
+							});
+							//监听排序，需开启sort
+							table.on('sort(result)', function(obj){
+								$('th').click(function(){//两次点击表头才可完成排序
+									var othis = $(this).context.dataset.field;//获取点击表头
+									table.reload('khdhybresult',{
+										page:{
+											curr:1
+										},
+										where:{
+											field: othis,
+											order: Aoption[othis]
+										},
+										done:function(){
+											Aoption[othis]=Aoption[othis]==='desc'?'asc':'desc';//根据现有排序，改成相反排序
+										}
+									});
+								});
+							});
+						});
+					}
+				});
+			});
+		});
+		$("#exportbtn").click(function(){
+			//导出事件
+			location.href = 'exportxls/export.php';
+		});
+	</script>
+
+</html>

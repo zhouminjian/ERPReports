@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>权限操作</title>
+	</head>
+
+	<body>
+		<div class="layui-tab" lay-filter="filtertab">
+			<ul class="layui-tab-title">
+				<li onclick="searchUser();" class="layui-this" lay-id="searchtab">查询用户</li>
+				<li onclick="adduser1();" lay-id="addusertab">新增用户</li>
+				<li onclick="loadauth('allauth_1');" lay-id="addrolertab">新增角色</li>
+				<li onclick="alterAuth();" lay-id="alertauthtab">修改权限</li>
+				<li onclick="screenParam();" lay-id="screenparamtab">投屏参数</li>
+			</ul>
+			<div class="layui-tab-content">
+				<!--查询用户模块-->
+				<div class="layui-tab-item" id="searchuser">
+					<form class="layui-form" name="searchuser">
+						<div class="layui-form-item">
+							<div class="layui-inline">
+								<div class="layui-input-inline">
+									<input type="text" id="sc" name="condition" autocomplete="off" class="layui-input" placeholder="请输入查询内容">
+								</div>
+								<button class="layui-btn" type="button" id="searchbtn" lay-submit lay-filter="searchuser">查询</button>
+							</div>
+						</div>
+					</form>
+					<div class="layui-form-item">
+						<div class="layui-inline">
+							<table class="layui-hide layui-table-cell" id="tableresult" lay-filter="result"></table>
+							<script type="text/html" id="optionbar">
+							  <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+							  <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+							</script>
+						</div>
+					</div>
+				</div>
+				<!--新增用户模块-->
+				<div class="layui-tab-item" id="adduser">
+					<form class="layui-form layui-form-pane" name="adduser">
+						<div class="layui-form-item">
+							<div class="layui-input-inline">
+								<input type="text" id="un" name="account" required lay-verify="required" placeholder="用户名(字母、数字至少6位)" class="layui-input">
+							</div>
+						</div>
+						<div class="layui-form-item" pane>
+								<label class="layui-form-label">角色</label>
+								<div class="layui-input-block" id="usergroup">
+									<!--动态加载用户组-->
+								</div>
+						</div>
+						<div class="layui-form-item">
+							<div class="layui-input-inline login-btn">
+								<button lay-submit lay-filter="adduser" id="adduser" class="layui-btn">新增用户</button>
+							</div>
+						</div>
+					</form>
+				</div>
+				<!--新增角色模块-->
+				<div class="layui-tab-item" id="addrole">
+					<form class="layui-form layui-form-pane" name="addrole">
+						<div class="layui-form-item">
+							<div class="layui-input-inline">
+								<input type="text" id="rn" name="rolename" required lay-verify="required" placeholder="角色名称(中文、英文、数字)" class="layui-input">
+							</div>
+						</div>
+						<div class="layui-form-item" pane>
+							<label class="layui-form-label">权限<br>
+								<input type="checkbox"  name="allcheck" lay-skin="primary" id="allcheck"    lay-filter="allcheck" title="全选" value="">
+							</label>
+							<div class="layui-input-block" id="allauth_1">
+								<!--动态加载所有权限-->
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<div class="layui-input-inline login-btn">
+								<button lay-submit lay-filter="addrole" id="addrole" class="layui-btn">新增角色</button>
+							</div>
+						</div>
+					</form>
+				</div>
+				<!--修改权限模块-->
+				<div class="layui-tab-item" id="roleauth">
+					<form class="layui-form layui-form-pane" name="alertauth">
+						<div class="layui-form-item">
+							<div class="layui-input-inline">
+								<select id="rolenames" name="rolenames" lay-verify="required" lay-filter="rolenames">
+									<!--动态加载所有角色-->
+								</select>
+							</div>
+							<div class="layui-input-inline login-btn">
+								<button lay-submit lay-filter="delroles" id="delroles" class="layui-btn">删除角色</button>
+							</div>
+						</div>
+						<div class="layui-form-item" pane>
+							<label class="layui-form-label">权限<br>
+								<input type="checkbox"  name="allcheck" lay-skin="primary" id="allcheck"    lay-filter="allcheck" title="全选" value="">
+							</label>
+							<div class="layui-input-block" id="allauth_2">
+								<!--动态加载所有权限并赋值-->
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<div class="layui-input-inline login-btn">
+								<button lay-submit lay-filter="alertauth" id="alertauth" class="layui-btn">确认修改</button>
+							</div>
+						</div>
+					</form>
+				</div>
+				<!--修改投屏参数模块-->
+				<div class="layui-tab-item" id="screenparam">
+					<form class="layui-form" name="screenparam">
+						<div class="layui-form-item">
+							<div class="layui-inline">
+								<button class="layui-btn" type="button" id="addscreen" lay-submit lay-filter="screenparam">新增</button>
+							</div>
+						</div>
+					</form>
+					<div class="layui-form-item">
+						<div class="layui-inline">
+							<table class="layui-hide layui-table-cell" id="screentable" lay-filter="screenresult"></table>
+							<script type="text/html" id="optionbar2">
+							  <a class="layui-btn layui-btn-xs" lay-event="edit">提交</a>
+							  <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+							</script>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="layui-row" id="adddiv" style="display: none;">
+	        <div class="layui-col-md10" style="margin-top: 10px;">
+	            <form class="layui-form" id="addScreenParam">
+	            	<div class="layui-form-item">
+	                    <label class="layui-form-label">周期类型：</label>
+	                    <div class="layui-input-block">
+	                        <input type="text" name="datetype" lay-verify="required|number" class="layui-input" placeholder="日：1,月：2,年：3">
+	                    </div>
+	                </div>
+	                <div class="layui-form-item">
+	                    <label class="layui-form-label">图表名：</label>
+	                    <div class="layui-input-block">
+	                        <input type="text" name="lx" lay-verify="required" class="layui-input" placeholder="英文全称首字母">
+	                    </div>
+	                </div>
+	                <div class="layui-form-item">
+	                    <label class="layui-form-label">显示周期：</label>
+	                    <div class="layui-input-block">
+							<input type="text" name="cycle" lay-verify="required|number" class="layui-input" placeholder="例如：7、15之类">
+	                    </div>
+	                </div>
+	                <div class="layui-form-item">
+	                    <label class="layui-form-label">周期单位：</label>
+	                    <div class="layui-input-block">
+							<input type="text" name="dtype" lay-verify="required" class="layui-input" placeholder="日、月、年">
+	                    </div>
+	                </div>
+	                <div class="layui-form-item">
+	                    <div class="layui-input-block">
+	                        <button type="button" class="layui-btn layui-btn-normal" lay-submit lay-filter="addparam">添加</button>
+	                    </div>
+	                </div>
+	            </form>
+	        </div>
+	    </div>
+	</body>
+	<script type="text/javascript">
+		function searchUser(){
+			$("#sc").val(""); 
+			//清除table
+			$("div.layui-table-view").remove();
+		}
+		function adduser1(){
+			$("#un").val(""); 
+			//加载所有角色
+			$.ajax({
+				url: 'model/getGroup.php',
+				data: '',
+				type: 'post',
+				success: function(result){
+					result = JSON.parse(result);
+					$("#usergroup").empty();
+					var str = "";
+					if(result.code == 105) {
+						for(let j in result.data){
+							str += "<input type='radio' name='group' value='"+result.data[j]['id']+"' title='"+result.data[j]['group']+"' lay-skin='primary'>";
+						}
+					}
+					$("#usergroup").append(str);
+					layui.use('form', function() {
+                        var form = layui.form;
+                        form.render();
+                	});
+				}
+			});
+		}
+		function loadauth(idname){
+			$("#rn").val(""); 
+			//加载所有权限
+			$.ajax({
+				url:"model/getAuth.php",
+				data:'',
+				type:"post",
+				success:function(result){
+					result = JSON.parse(result);
+					$("#"+idname).empty();
+					var str = "";
+					var str_1 = "";
+					if(result.code == 106) {
+						for(let j in result.data){
+							if(result.data[j]['parentid']==0){
+								str += "<input type='checkbox' class='group' name='group"+result.data[j]['pid']+"' value='"+result.data[j]['pid']+"' title='"+result.data[j]['menuname']+"' lay-skin='primary'>";
+								//父节点为0的则本身就是父节点
+								for(let k in result.data){
+									if(result.data[k]['parentid'] == result.data[j]['mid']){
+										str += "<input type='checkbox' class='group' name='group"+result.data[k]['pid']+"' value='"+result.data[k]['pid']+"' title='"+result.data[k]['menuname']+"' lay-skin='primary'>";
+									}
+								}
+								str += "<br>";
+							}
+							else if(result.data[j]['parentid']<0){
+								//管理员菜单
+								str_1 += "<input type='checkbox' class='group' name='group"+result.data[j]['pid']+"' value='"+result.data[j]['pid']+"' title='"+result.data[j]['menuname']+"' lay-skin='primary'>"; 
+							}	
+						}
+						str += str_1;
+					}
+					$("#"+idname).append(str);
+					layui.use('form', function() {
+                        var form = layui.form;
+                        form.render();
+                	});
+				}
+			});
+		}
+		function alterAuth(){
+			//修改角色权限
+			//显示select中的角色
+			$.ajax({
+				url:"model/getRole.php",
+				data:'',
+				type:"post",
+				success:function(result){
+					result = JSON.parse(result);
+					$("#rolenames").empty();
+					var str = "<option value=''>请选择角色</option>";
+					for(let j in result.data){
+						str += "<option value='"+result.data[j]['rid']+"'>"+result.data[j]['description']+"</option>";
+					}
+					$("#rolenames").append(str);
+					layui.use('form', function() {
+                        var form = layui.form;
+                        form.render();
+                	});
+				}
+			});
+			//显示角色权限
+			loadauth("allauth_2");
+		}
+		function screenParam(){
+			//浏览投屏参数并提供修改
+			layui.use('table', function(){
+				var table = layui.table;
+				table.render({
+				  	elem:'#screentable',
+					url:"model/screenParam.php",
+					title:'查询结果',
+					cols:[[
+						{field:'id',title:'ID',width:60,sort:true,align:'center'},
+						{field:'datetype',title:'日-1,月-2,年-3',width:200,edit:'text',align:'center'},
+						{field:'lx',title:'图表名',width:150,edit:'text',align:'center'},
+						{field:'cycle',title:'显示周期',width:150,edit:'text',align:'center'},	
+						{field:'ymd',title:'周期单位',width:150,edit:'text',align:'center'},
+						{fixed:'right',title:'操作',width:115,align:'center', toolbar: '#optionbar2'}
+					]],
+				  	even:true,
+				  	page:true,
+				  	limits: [15,30,60],
+				  	limit: 15,
+				});
+				table.on('tool(screenresult)', function(obj){
+						data = JSON.stringify(obj.data);
+						if(obj.event === 'del'){
+							layer.confirm('确定删除？',{btn:['确定','取消']},function(index){
+								layer.close(index);
+								$.ajax({
+						        	type:"post",
+						        	url:"model/deleteScreenP.php",
+						        	data:{'data':data},
+						        	success:function(result){
+						        		result = JSON.parse(result);
+						        		if(result.code==129){
+						        			obj.del();
+						        		}
+						        		layer.msg(result.msg);
+						        	}
+						        });
+							},function(){
+								layer.msg("已取消");
+							});
+						}
+						else if(obj.event === 'edit'){
+							//编辑参数
+							var re = /^[1-9]+[0-9]*]*$/;
+							var rec = /^[\u4E00-\u9FA5]{1}$/;
+							var ree = /^[A-Za-z]+$/;
+							if(re.test(obj.data.datetype) && re.test(obj.data.cycle) && rec.test(obj.data.ymd) && ree.test(obj.data.lx)){
+								layer.confirm('确定修改？',{btn:['确定','取消']},function(index){
+									layer.close(index);
+									$.ajax({
+							        	type:"post",
+							        	url:"model/updateScreenP.php",
+							        	data:{'data':data},
+							        	success:function(result){
+							        		result = JSON.parse(result);
+							        		if(result.code==130){
+							        			$(".layui-laypage-btn")[0].click();
+							        		}
+							        		layer.msg(result.msg);
+							        	}
+							        });
+								},function(){
+									layer.msg("已取消");
+								});
+							}
+							else{
+								layer.msg("填写数据格式错误");
+							}
+						}
+					});
+			});
+		}
+		layui.use(['form', 'layer','element'], function() {
+			var form = layui.form;
+			var $ = layui.jquery;
+			var element = layui.element;
+			element.tabChange('filtertab', 'searchtab');
+			AddUser(form);
+		});
+	</script>
+</html>

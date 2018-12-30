@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>用户修改</title>
+		<link rel="stylesheet" href="../../layui/css/layui.css">
+	</head>
+
+	<body>
+		<fieldset class="layui-elem-field site-demo-button" style="margin-top: 30px;padding: 10px;">
+			<legend>用户信息</legend>
+			<form class="layui-form" id="updateexpert">
+				<div class="layui-form-item">
+					<div class="layui-inline">
+						<label class="layui-form-label">用户ID：</label>
+						<div class="layui-input-block">
+							<input type="text" name="uid" id="uid" readonly class="layui-input">
+						</div>
+					</div>
+					<div class="layui-inline">
+						<label class="layui-form-label">用户账号：</label>
+						<div class="layui-input-block">
+							<input type="text" name="account" id="account" readonly class="layui-input">
+						</div>
+					</div>
+					<div class="layui-inline">
+						<label class="layui-form-label">用户昵称：</label>
+						<div class="layui-input-block">
+							<input type="text" name="nickname" id="nickname" placeholder="由中文、英文或者数字组成" lay-verify="required" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-inline">
+						<label class="layui-form-label">用户密码：</label>
+						<div class="layui-input-block">
+							<input type="password" name="password" id="password" placeholder="英文、数字，长度5-13位" lay-verify="required" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-inline">
+						<label class="layui-form-label">角色：</label>
+						<div class="layui-input-block">
+							<select id="rolenames" name="rolenames" lay-verify="required" lay-filter="rolenames">
+								<!--动态加载所有角色并默认为现有角色-->
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<div class="layui-input-block">
+		            	<button type="button" class="layui-btn layui-btn-normal" lay-submit lay-filter="formupdate">确认修改</button>
+		        	</div>
+				</div>
+			</form>
+		</fieldset>
+	</body>
+	<style>
+		body .layer-ext-myskin .layui-layer-content {
+		    overflow: visible;
+		}
+	</style>
+	<script src="../../js/jquery.min.js"></script>
+	<script src="../../layui/layui.js"></script>
+	<script src="../../js/verify.js"></script>
+	<script type="text/javascript">
+		layui.use(['form', 'layer'], function() {
+			// 操作对象
+			var form = layui.form;
+			$ = layui.jquery;
+			form.on('submit(formupdate)',function(data){
+				//验证修改的参数
+				if(data.field.nickname.match(/^[A-Za-z0-9\u4e00-\u9fa5]+$/)!=data.field.nickname){
+					layer.msg('非法的昵称');
+					return false;
+				}
+				if(data.field.password.match(/^[0-9a-zA-Z]\w{4,12}$/) != data.field.password && data.field.password !='******'){
+					layer.msg('新密码不合法');
+					return false;
+				}
+				data = JSON.stringify(data.field);
+				$.ajax({
+					type:"post",
+					url:"../../model/alertuserinfo.php",
+					data:{'data':data},
+					success:function(result){
+						result = JSON.parse(result);
+						layer.msg(result.msg);
+						setTimeout(function(){//延迟1秒关闭
+							var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+							parent.layer.close(index);  // 关闭layer
+						},1000);
+					}
+				});
+			});
+		});
+		//填充详情页面内容
+		$(function(){
+			$.ajax({
+				type:'post',
+				data:'',
+				url:'../../model/getindexinfo.php',
+				success:function(result){
+					result = JSON.parse(result);
+					if(result.code == 123){
+						//加载固定数据
+						$('#uid').val(result.data.id);
+						$('#account').val(result.data.account);
+						$('#nickname').val(result.data.nickname);
+						$('#password').val('******');//前端显示密码默认为6个*
+						var rid = result.data.rid;
+						//加载option
+						$.ajax({
+							type:"post",
+							url:"../../model/getRole.php",
+							data:'',
+							success:function(result){
+								var str='';
+								result = JSON.parse(result);
+								for(let j in result.data){
+									if(result.data[j]['rid'] == rid){
+										str += "<option selected value='"+result.data[j]['rid']+"'>"+result.data[j]['description']+"</option>";
+									}
+									else{
+										str += "<option value='"+result.data[j]['rid']+"'>"+result.data[j]['description']+"</option>";
+									}
+								}
+								$("#rolenames").append(str);
+								layui.use('form', function() {
+			                        var form = layui.form;
+			                        form.render();
+			                	});
+							}
+						});
+					}
+					else{
+						layer.msg(result.msg);
+					}
+				}
+			});
+		});
+	</script>
+</html>

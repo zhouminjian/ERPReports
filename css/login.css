@@ -1,0 +1,78 @@
+.conbox{
+	width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: -1;
+    background: radial-gradient(#6ca48c, #1b7f99);
+}
+.conbox:hover{
+	background: radial-gradient(#6ca48c,#1b7f99,#0d3f77);
+}
+.login-main {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 350px;
+    margin: 0 auto;
+}
+.login-main header {
+    margin-top: 150px;
+    height: 35px;
+    line-height: 35px;
+    font-size: 30px;
+    font-weight: 150;
+    text-align: center;
+}
+ 
+.login-main header, .login-main form, .login-main form .layui-input-inline {
+    margin-bottom: 15px;
+}
+ 
+.login-main form .layui-input-inline, .login-main form .layui-input-inline input, .login-main form .layui-input-inline button {
+    width: 100%;
+}
+ 
+.login-main form .login-btn {
+    margin-bottom: 5px;
+}
+
+.login-sub{
+	margin-top:10px;
+	text-align: center;
+}
+.login-sub input{
+	margin-top:15px;
+	background: #45B549;
+	line-height: 35px;
+	width: 150px;
+	color: #FFFFFF;
+	font-size: 20px;
+	font-family: 'Î¢ÈíÑÅºÚ','ÎÄÈªæäÕýºÚ','ºÚÌå';
+	border: none;
+	border-radius: 5px;
+}
+.login_form .login_input{
+	height: 35px;
+	border: none;
+	line-height: 35px;
+	width: 200px;
+	font-size: 14px;
+	outline: none;
+}
+.login_form .login-item{
+	padding: 5px 8px;
+	border:1px solid #dedede;
+	border-radius: 8px;
+	margin-top: 28px;
+}
+.loginwarrp{
+	margin: 20px auto;
+	width: 350px;
+
+	background:transparent;
+	overflow: hidden;
+	font-size: 14px;
+	font-family: 'Î¢ÈíÑÅºÚ','ÎÄÈªæäÕýºÚ','ºÚÌå';
+}

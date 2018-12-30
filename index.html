@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>亚东科技</title>
+		<link rel="stylesheet" href="layui/css/layui.css">
+		<link rel="stylesheet" href="css/css.css" />
+		<link rel="stylesheet" href="css/login.css" />
+		<link rel="stylesheet" type="text/css" href="css/formSelects-v4.css"/>
+	</head>
+	<body class="layui-layout-body" onload="userAction('Load');">
+		<div class="layui-layout layui-layout-admin">
+			<div class="layui-header">
+				<div class="layui-logo">亚东科技</div>
+				<ul class="layui-nav layui-layout-right">
+					<li class="layui-nav-item" lay-unselect="">
+						<a href="javascript:;" id="nickname">欢迎：<span>用户</span></a>
+						<dl class="layui-nav-child" id='add'>
+							<dd>
+								<a href="javascript:;" onclick="userAction('Logout');">注销</a>
+							</dd>
+							<dd>
+								<a href="javascript:;" onclick="updataPW();">修改资料</a>
+							</dd>
+						</dl>
+					</li>
+				</ul>
+			</div>
+
+			<div class="layui-side layui-bg-black">
+				<div class="layui-side-scroll">
+					<!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+					<ul class="layui-nav layui-nav-tree" lay-filter="test" id="dnmenu">
+						
+					</ul>
+				</div>
+			</div>
+			<div class="layui-body">
+				<!-- 内容主体区域 -->
+				<div style="padding: 15px;">
+					<div id="showRp">
+
+					</div>
+				</div>
+			</div>
+			<div class="layui-footer">
+				<!-- 底部固定区域 -->
+				<div class="layui-main">
+					<p style="text-align: center;">Copyright&nbsp;&copy;2018&nbsp;www.yadongtextile.com </p>
+				</div>
+			</div>
+		</div>
+		<script src="js/jquery.min.js"></script>
+		<script src="layui/layui.js"></script>
+		<script src="js/formSelects-v4.js"></script>
+		<script src="js/base.js"></script>
+		<script src="js/echarts.js"></script>
+		<script src="js/verify.js"></script>
+		<script src="js/js-pinyin.js"></script>
+		<script src="js/multiselect.js"></script>
+		<script type="text/javascript">
+			//JavaScript代码区域
+			var element;
+			layui.use('element', function() {
+				element = layui.element;
+			});
+
+			function updataPW(){
+				$("#showRp").load("view/User/update.html");
+			}
+		</script>
+	</body>
+
+</html>

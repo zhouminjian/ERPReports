@@ -1,0 +1,18 @@
+.rightbottomdiv{
+	border: 1px solid #007DDB;
+	margin-left: 20%;
+}
+.righttopdiv{
+	border: 1px solid #007DDB;
+	margin-left: 10.5%;
+}
+#showecharts{
+	max-width: 1920px;
+    min-height: 650px;
+}
+.layui-body{
+	overflow-x: scroll;
+}
+.layui-table-checked{
+	background-color: #8FBC8F;
+}

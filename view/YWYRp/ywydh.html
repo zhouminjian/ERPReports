@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>业务员大货报表</title>
+	</head>
+	<body class="layui-layout-body">
+		<div style="padding: 15px;">
+			<div>
+				<form class="layui-form" name="searchywy">
+					<div class="layui-form-item">
+						<div class="layui-inline" id="choosedate3">
+							<div class="layui-inline">
+								<div class="layui-input-inline">
+									<input type="text" name="startyear" class="layui-input" id="startyear" lay-verify="required" readonly="" placeholder="开始年份">
+								</div>
+							</div>
+						</div>
+						<div class="layui-inline">
+							<div class="layui-input-inline" style="width: 400px; display: inline-block; vertical-align: top;">
+								<select name="ywy" id='ywy' xm-select="select1" xm-select-search xm-select-show-count="4">
+									<!--从系统中读取业务员-->
+								</select>
+							</div>
+							<button class="layui-btn" type="button" id="searchbtn" lay-submit lay-filter="searchywy">查询</button>
+							<button class="layui-btn" type="button" id="exportbtn">导出</button>
+						</div>
+					</div>
+				</form>
+				<div class="layui-form-item">
+					<div class="layui-inline">
+						<table class="layui-hide layui-table-cell" id="ywydhresult" lay-filter="result"></table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript">
+		//动态加载所有业务员
+		$(function(){
+			$.ajax({
+				type:'post',
+				url:'model/loadAllywy.php',
+				data:'',
+				success:function(result){
+					result = JSON.parse(result);
+					$("#ywy").empty();
+					var str = "<option value=''></option>";
+					for(let j in result.data){
+						str += "<option value='"+result.data[j]['EmpID']+"'>"+result.data[j]['Name']+"</option>";
+					}
+					$("#ywy").append(str);
+					layui.use('form', function() {
+                        var form = layui.form;
+                        form.render();
+                	});
+                	mulselect();
+				}
+			});
+			$("#exportbtn").hide();
+		});
+		
+		var laydate;
+		var form;
+		layui.use('laydate', function() {
+			laydate = layui.laydate;
+			laydate.render({
+				elem: '#startyear',
+				type: 'year'
+			});
+		});
+		layui.use('form', function() {
+			form = layui.form;
+			form.render();
+			form.on('submit(searchywy)',function(data){
+				data = JSON.stringify(data.field);
+				//记录升降排序，默认第一次降序
+				var Aoption = {
+					'Qty':"desc",
+					'OutGrayQty':'desc',
+					'ARolls':'desc',
+					'OutQty':'desc',
+					'CRolls':'desc',
+					'PRolls':'desc',
+					'DRolls':'desc',
+				};
+				$.ajax({
+					type:'post',
+					url:'model/notecondition.php',
+					data:{'data':data},
+					success:function(){
+						layui.use('table', function(){
+							var table = layui.table;
+							table.render({
+							  	elem:'#ywydhresult',
+								url:"controller/ywydh.php",
+								title:'查询结果',
+								cols:[[
+									{field:'Name',title:'姓名',width:100,align:'center',templet:'<div><span title="{{d.Name}}">{{d.Name}}</span></div>'},
+									{field:'OrderNums',title:'总单数',width:100,align:'center',templet:'<div><span title="{{d.OrderNums}}">{{d.OrderNums}}</span></div>'},
+									{field:'Qty',title:'总订单量',width:120,align:'center',templet:'<div><span title="{{d.Qty}}">{{d.Qty}}</span></div>',sort:true},
+									{field:'OutGrayQty',title:'已投坯量',width:120,align:'center',templet:'<div><span title="{{d.OutGrayQty}}">{{d.OutGrayQty}}</span></div>',sort:true},
+									{field:'CustomerNums',title:'客户数',width:90,align:'center',templet:'<div><span title="{{d.CustomerNums}}">{{d.CustomerNums}}</span></div>'},	
+									{field:'ARolls',title:'总成品量',width:120,align:'center',templet:'<div><span title="{{d.ARolls}}">{{d.ARolls}}</span></div>',sort:true},
+									{field:'OutQty',title:'已发货量',width:120,align:'center',templet:'<div><span title="{{d.OutQty}}">{{d.OutQty}}</span></div>',sort:true},
+									{field:'MaxQty',title:'订单数最大',width:100,align:'center',templet:'<div><span title="{{d.MaxQty}}">{{d.MaxQty}}</span></div>'},
+									{field:'MaxOrder',title:'订单量最大',width:100,align:'center',templet:'<div><span title="{{d.MaxOrder}}">{{d.MaxOrder}}</span></div>'},
+									{field:'SellCts',title:'经销客户数',width:100,align:'center',templet:'<div><span title="{{d.SellCts}}">{{d.SellCts}}</span></div>'},
+									{field:'Cells',title:'经销单个数',width:100,align:'center',templet:'<div><span title="{{d.Cells}}">{{d.Cells}}</span></div>'},
+									{field:'CRolls',title:'经销单总量',width:120,align:'center',templet:'<div><span title="{{d.CRolls}}">{{d.CRolls}}</span></div>',sort:true},
+									{field:'ProcessCts',title:'加工客户数',width:100,align:'center',templet:'<div><span title="{{d.ProcessCts}}">{{d.ProcessCts}}</span></div>'},
+									{field:'ProSheets',title:'加工单个数',width:100,align:'center',templet:'<div><span title="{{d.ProSheets}}">{{d.ProSheets}}</span></div>'},
+									{field:'PRolls',title:'加工单总量',width:120,align:'center',templet:'<div><span title="{{d.PRolls}}">{{d.PRolls}}</span></div>',sort:true},
+									{field:'DouDisCts',title:'双经销客户数',width:100,align:'center',templet:'<div><span title="{{d.DouDisCts}}">{{d.DouDisCts}}</span></div>'},
+									{field:'DouDistributes',title:'双经销个数',width:100,align:'center',templet:'<div><span title="{{d.DouDistributes}}">{{d.DouDistributes}}</span></div>'},
+									{field:'DRolls',title:'双经销总量',width:120,align:'center',templet:'<div><span title="{{d.DRolls}}">{{d.DRolls}}</span></div>',sort:true},
+								]],
+							  	page:true,
+							  	limits: [15,30,45,60,100],
+							  	limit: 15,
+							  	autoSort: false,
+							  	done: function(res, curr, count){
+							  		//判断查询是否有结果
+							  		if(count > 0){
+							  			//显示导出按钮
+							  			$("#exportbtn").show();
+							  		}
+							  		else{
+							  			$("#exportbtn").hide();
+							  		}
+							  	}
+							});
+							//监听排序，需开启sort
+							table.on('sort(result)', function(obj){
+								$('th').click(function(){//两次点击表头才可完成排序
+									var othis = $(this).context.dataset.field;//获取点击表头
+									table.reload('ywydhresult',{
+										page:{
+											curr:1
+										},
+										where:{
+											field: othis,
+											order: Aoption[othis]
+										},
+										done:function(){
+											Aoption[othis]=Aoption[othis]==='desc'?'asc':'desc';//根据现有排序，改成相反排序
+										}
+									});
+								});
+							});
+							//监听行选中
+							table.on('row(result)', function(obj){
+								obj.tr.addClass('layui-table-click').siblings().removeClass('layui-table-click');
+							});
+						});
+					},
+				});
+			});
+		});
+		$("#exportbtn").click(function(){
+			//导出事件
+			location.href = 'exportxls/export.php';
+		});
+	</script>
+
+</html>

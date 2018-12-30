@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>成品入库报表</title>
+		<script src="js/controlshow.js"></script>
+		<script src="js/echartoption.js"></script>
+	</head>
+	<body class="layui-layout-body">
+		<div style="padding: 15px;">
+			<div>
+				<form class="layui-form" action="#">
+					<div class="layui-form-item">
+						<div class="layui-inline">
+							<div class="layui-input-inline" style="width:150px;">
+								<select id="datetype" name="datetype" lay-verify="required" lay-filter="datetype">
+									<option value="">报表期限格式</option>
+									<option value="1">按日</option>
+									<option value="2">按月</option>
+									<option value="3">按年</option>
+								</select>
+							</div>
+						</div>
+						<div class="layui-inline" id="choosedate1">
+							<div class="layui-inline">
+								<div class="layui-input-inline">
+									<input type="text" name="startdate" class="layui-input" id="startdate" lay-verify="required" readonly="" placeholder="起始日期">
+								</div>
+							</div>
+							<div class="layui-inline">
+								<div class="layui-input-inline">
+									<input type="text" name="enddate" class="layui-input" id="enddate" lay-verify="required" readonly="" placeholder="结束日期">
+								</div>
+							</div>
+						</div>
+						<div class="layui-inline" id="choosedate2">
+							<div class="layui-inline">
+								<div class="layui-input-inline">
+									<input type="text" name="startmon" class="layui-input" id="startmon" lay-verify="required" readonly="" placeholder="起始月份">
+								</div>
+							</div>
+							<div class="layui-inline">
+								<div class="layui-input-inline">
+									<input type="text" name="endmon" class="layui-input" id="endmon" lay-verify="required" readonly="" placeholder="结束月份">
+								</div>
+							</div>
+						</div>
+						<div class="layui-inline" id="choosedate3">
+							<div class="layui-inline">
+								<div class="layui-input-inline">
+									<input type="text" name="startyear" class="layui-input" id="startyear" lay-verify="required" readonly="" placeholder="起始年份">
+								</div>
+							</div>
+							<div class="layui-inline">
+								<div class="layui-input-inline">
+									<input type="text" name="endyear" class="layui-input" id="endyear" lay-verify="required" readonly="" placeholder="结束年份">
+								</div>
+							</div>
+						</div>
+						<div class="layui-inline">
+							<div class="layui-input-inline" style="width:100px">
+								<select name="shape" lay-verify="required">
+									<option value="1">柱形图</option>
+									<option value="2">折线图</option>
+								</select>
+							</div>
+						</div>
+						<div class="layui-inline">
+							<button class="layui-btn" type="button" lay-submit lay-filter="formsubmit">提交</button>
+							<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div id="showecharts"></div>
+		</div>
+	</body>
+	<script type="text/javascript">
+		$(function(){
+			initInput();
+		});
+		var laydate;
+		var form;
+		layui.use('laydate', function() {
+			laydate = layui.laydate;
+			showtime(laydate);
+		});
+		layui.use('form', function() {
+			form = layui.form;
+			form.on('select(datetype)', function(data){
+				var optval = data.value;
+				if(optval=="1"){
+					initInput();
+				 	$("#choosedate1").show();
+				 	$("#startdate").attr("lay-verify","required");
+				 	$("#enddate").attr("lay-verify","required");
+				}
+				else if(optval=="2"){
+					initInput();
+				 	$("#choosedate2").show();
+				 	$("#startmon").attr("lay-verify","required");
+				 	$("#endmon").attr("lay-verify","required");
+				}
+				else if(optval=="3"){
+				 	initInput();
+					$("#choosedate3").show();
+					$("#startyear").attr("lay-verify","required");
+				 	$("#endyear").attr("lay-verify","required");
+				}else{
+					initInput();
+				}
+			});
+			showform(form,"cprk");
+		});
+		window.onresize = function(){//窗口大小变动则重新加载图表
+			if (vChart != undefined) {
+		        vChart.resize();
+			}
+		}
+	</script>
+
+</html>

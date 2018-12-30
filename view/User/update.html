@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>密码修改</title>
+	</head>
+	<body>
+	<div class="loginwarrp">
+		<div class="login_form">
+			<form class="layui-form" name="update">
+				<li class="login-item">
+					<span>用户名：</span>
+					<input type="text" id="account" name="account" class="login_input" disabled="">
+				</li>
+				<li class="login-item">
+					<span>原密码：</span>
+					<input type="password" id="oldpassword" name="opwd" class="login_input" >
+				</li>
+				<li class="login-item">
+					<span>新密码：</span>
+					<input type="password" id="newpassword" name="npwd" placeholder="英文、数字，长度限制5-13位" class="login_input" >
+				</li>
+				<li class="login-item">
+					<span>确认密码：</span>
+					<input type="password" id="qrpassword" name="cfmpwd" class="login_input" >
+				</li>
+				<li class="login-sub">
+					<button lay-submit lay-filter="update" id="update" class="layui-btn">确认修改</button>
+				</li> 
+			</form>    
+		</div>
+	</div>
+</body>
+<script type="text/javascript">
+	$(function(){
+		$.ajax({
+			url: 'model/getInfo.php',
+			data: '',
+			type: 'post',
+			success: function(result){
+				result = JSON.parse(result);
+				if(result.code == 101) {
+					document.getElementById("account").value=result.data.account;
+				}
+			}
+		});
+	});
+	layui.use(['form','layer'], function() {
+		var form = layui.form;
+		var $ = layui.jquery;
+		UpdateInfo(form);
+	});
+</script>
+</html>

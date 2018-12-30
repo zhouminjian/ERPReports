@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>业务员规格报表</title>
+	</head>
+	<body class="layui-layout-body">
+		<div style="padding: 15px;">
+			<div>
+				<form class="layui-form" name="searchywy">
+					<div class="layui-form-item">
+						<div class="layui-inline" id="choosedate3">
+							<div class="layui-inline">
+								<div class="layui-input-inline">
+									<input type="text" name="startyear" class="layui-input" id="startyear" lay-verify="required" readonly="" placeholder="开始年份">
+								</div>
+							</div>
+						</div>
+						<div class="layui-inline">
+							<div class="layui-input-inline" style="width: 400px; display: inline-block; vertical-align: top;">
+								<select name="ywy" id='ywy' xm-select="select1" xm-select-search xm-select-show-count="4">
+									<!--从系统中读取业务员-->
+								</select>
+							</div>
+							<button class="layui-btn" type="button" id="searchbtn" lay-submit lay-filter="searchywy">查询</button>
+						</div>
+					</div>
+				</form>
+				<div class="layui-form-item">
+					<div class="layui-inline">
+						<table class="layui-hide layui-table-cell" id="ywyggresult" lay-filter="result"></table>
+						<script type="text/html" id="optionbar">
+						  <a class="layui-btn layui-btn-xs" lay-event="edit">查看规格明细</a>
+						</script>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript">
+		//动态加载所有业务员
+		$(function(){
+			$.ajax({
+				type:'post',
+				url:'model/loadAllywy.php',
+				data:'',
+				success:function(result){
+					result = JSON.parse(result);
+					$("#ywy").empty();
+					var str = "<option value=''></option>";
+					for(let j in result.data){
+						str += "<option value='"+result.data[j]['EmpID']+"'>"+result.data[j]['Name']+"</option>";
+					}
+					$("#ywy").append(str);
+					layui.use('form', function() {
+                        var form = layui.form;
+                        form.render();
+                	});
+                	mulselect();
+				}
+			});
+		});
+		var laydate;
+		var form;
+		layui.use('laydate', function() {
+			laydate = layui.laydate;
+			laydate.render({
+				elem: '#startyear',
+				type: 'year'
+			});
+		});
+		layui.use('form', function() {
+			form = layui.form;
+			form.render();
+			form.on('submit(searchywy)',function(data){
+				data = JSON.stringify(data.field);
+				$.ajax({
+					type:'post',
+					url:'model/notecondition.php',
+					data:{'data':data},
+					success:function(){
+						layui.use('table', function(){
+							var table = layui.table;
+							table.render({
+							  	elem:'#ywyggresult',
+								url:"controller/ywygg.php",
+								title:'查询结果',
+								cols:[[
+									{field:'EmpID', title: 'ID', width: 100,align:'center'},
+									{field:'Name',title:'姓名',width:160,align:'center',templet:'<div><span title="{{d.Name}}">{{d.Name}}</span></div>'},
+									{field:'SpecNum',title:'总规格数',width:160,align:'center',templet:'<div><span title="{{d.SpecNum}}">{{d.SpecNum}}</span></div>'},
+									{fixed:'right',title:'操作',width:160,align:'center', toolbar: '#optionbar'}
+									]],
+							  	even:true,
+							  	page:true,
+							  	limits: [15,30,45,60,100],
+							  	limit: 15,
+							  	done:function(res, curr, count){
+							  		
+							  	}
+							});
+							table.on('tool(result)', function(obj){
+								data = JSON.stringify(obj.data);
+								if(obj.event === 'edit'){
+									//显示内容
+									$.ajax({
+							    		type:"post",
+							        	url:"model/noteindexinfo.php",
+							        	data:{'data':data},
+							        	success:function(result){
+							        		result = JSON.parse(result);
+							        		if(result.code == 122){
+							        			layer.open({
+										     		type:2,
+										     		title:false,
+										     		closeBtn:1,
+										     		shade: [0],
+										     		anim: 2,
+										     		area: ['500px', '750px'],
+										     		content: ['view/YWYRp/ggdetail.html', 'yes'],
+										     	});
+							        		}
+							        		else{
+							        			layer.msg(result.msg);
+							        		}
+							        	}
+							    	});
+								}
+							});
+						});
+					}
+				});
+			});
+		});
+		
+	</script>
+
+</html>
